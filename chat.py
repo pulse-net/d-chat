@@ -49,6 +49,10 @@ def listen_for_client_messages(client):
 
             if len(message) > 0:
                 print(message)
+
+                for client_socket in client_list:
+                    if client_socket != client:
+                        client_socket.send(f"\n{message}".encode('ascii'))
         except:
             break
 
@@ -86,8 +90,7 @@ def send_message():
         message = input(f"{clients[0].nick_name}> ")
 
         for client in client_list:
-            # client.send(message.encode('ascii'))
-            client.send(f"{clients[0].nick_name}> {message}".encode('ascii'))
+            client.send(f"\n{clients[0].nick_name}> {message}".encode('ascii'))
 
 
 def listen_messages(client, clients):
