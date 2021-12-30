@@ -39,6 +39,20 @@ def get_ip():
     return IP
 
 
+def listen_for_client_messages(client):
+    while True:
+        try:
+            message = client.recv(1024).decode('ascii')
+
+            if message == "<STOP>":
+                break
+
+            if len(message) > 0:
+                print(message)
+        except:
+            break
+
+
 def listen_for_requests():
     print("Server is listening...")
     while True:
@@ -62,6 +76,9 @@ def listen_for_requests():
             print(f"Sent to: {clients[i+1]}")
 
         client_list.append(client)
+
+        listen_message_thread = threading.Thread(target=listen_for_client_messages, args=(client,))
+        listen_message_thread.start()
 
 
 def send_message():
