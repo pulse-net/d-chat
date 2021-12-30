@@ -130,7 +130,7 @@ def listen_messages(client, clients):
 def send_message_client(client, nickname):
     while True:
         message = input(f"{nickname}> ")
-        client.send(f"{nickname}> {message}".encode('ascii'))
+        client.send(f"\n{nickname}> {message}".encode('ascii'))
 
 
 if __name__ == "__main__":
