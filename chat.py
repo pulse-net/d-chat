@@ -69,8 +69,9 @@ def send_message():
         message = input(f"{clients[0].nick_name}> ")
 
         for client in client_list:
-            client.send(message.encode('ascii'))
-        
+            # client.send(message.encode('ascii'))
+            client.send(f"{clients[0].nick_name}> {message}".encode('ascii'))
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Decentralized chat")
