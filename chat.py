@@ -90,6 +90,49 @@ def send_message():
             client.send(f"{clients[0].nick_name}> {message}".encode('ascii'))
 
 
+def listen_messages(client, clients):
+    is_update = False
+    ip = ""
+    nickname = ""
+    
+    while True:
+        try:
+            message = client.recv(1024)
+            message = message.decode('ascii')
+
+            if "<UPDATE>" in message:
+                is_update = True
+
+            message = [val for val in message.split('<END>') if len(val) > 0]
+
+            if len(message) > 0:
+                if is_update:
+                    for val in message:
+                        if re.match(r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b", val):
+                            ip = val
+                        elif val != "<STOP>":
+                            nickname = val
+
+                    if ip != "" and nickname != "":
+                        clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nickname))
+                        print("Ledger updated: ")
+                        print(clients)
+                        is_update = False
+                        ip = ""
+                        nickname = ""
+                else:
+                    for val in message:
+                        print(val)
+        except:
+            break
+
+
+def send_message_client(client, nickname):
+    while True:
+        message = input(f"{nickname}> ")
+        client.send(f"{nickname}> {message}".encode('ascii'))
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Decentralized chat")
     parser.add_argument("--create", action="store_true", default=False, help="Create a new chat")
@@ -152,43 +195,17 @@ if __name__ == "__main__":
                 break
 
         clients = Ledger()
-        for ip, nickname in zip(ips, nicknames):
-            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nickname))
+        for ip, nick_name in zip(ips, nicknames):
+            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nick_name))
 
         print("Initial ledger: ")
         print(clients)
 
-        is_update = False
-        ip = ""
-        nickname = ""
+        listen_thread = threading.Thread(target=listen_messages, args=(client, clients))
+        listen_thread.start()
 
-        while True:
-            try:
-                message = client.recv(1024)
-                message = message.decode('ascii')
+        send_thread = threading.Thread(target=send_message_client, args=(client, nickname))
+        send_thread.start()
 
-                if "<UPDATE>" in message:
-                    is_update = True
-
-                message = [val for val in message.split('<END>') if len(val) > 0]
-
-                if len(message) > 0:
-                    if is_update:
-                        for val in message:
-                            if re.match(r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b", val):
-                                ip = val
-                            elif val != "<STOP>":
-                                nickname = val
-
-                        if ip != "" and nickname != "":
-                            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nickname))
-                            print("Ledger updated: ")
-                            print(clients)
-                            is_update = False
-                            ip = ""
-                            nickname = ""
-                    else:
-                        for val in message:
-                            print(val)
-            except:
-                break
+        listen_thread.join()
+        send_thread.join()
