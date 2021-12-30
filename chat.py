@@ -2,7 +2,6 @@ import argparse
 import socket
 import re
 import threading
-import pickle
 
 from ledger import Ledger
 from ledger_entry import LedgerEntry
