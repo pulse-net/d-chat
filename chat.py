@@ -19,6 +19,7 @@ def send_ledger(client, ledger):
     print("Send complete")
 
 def update_ledger(client, ledger_entry):
+    print(client)
     client.send("<UPDATE>".encode('ascii'))
 
     client.send(ledger_entry.ip_address.encode('ascii'))
@@ -81,10 +82,8 @@ if __name__ == "__main__":
             thread.start()
             thread.join()
 
-            for i, client in enumerate(client_list):
-                thread = threading.Thread(target=update_ledger, args=(client, client_ledger))
-                thread.start()
-                thread.join()
+            for i, client_send in enumerate(client_list):
+                update_ledger(client_send, client_ledger)
                 print(f"Sent to: {clients[i+1]}")
 
             client_list.append(client)
