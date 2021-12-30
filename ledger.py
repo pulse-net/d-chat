@@ -23,3 +23,6 @@ class Ledger:
             ledger_str += str(entry) + "\n"
 
         return ledger_str
+
+    def __getitem__(self, idx):
+        return self.__ledger[idx]
