@@ -169,5 +169,8 @@ if __name__ == "__main__":
                             is_update = False
                             ip = ""
                             nickname = ""
+                    else:
+                        for val in message:
+                            print(val)
             except:
                 break
