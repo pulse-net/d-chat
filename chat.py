@@ -100,3 +100,35 @@ if __name__ == "__main__":
 
         print("Initial ledger: ")
         print(clients)
+
+        is_update = False
+        ip = ""
+        nickname = ""
+
+        while True:
+            try:
+                message = client.recv(1024)
+                message = message.decode('ascii')
+
+                if "<UPDATE>" in message:
+                    is_update = True
+
+                message = [val for val in message.split('<END>') if len(val) > 0]
+
+                if len(message) > 0:
+                    if is_update:
+                        for val in message:
+                            if re.match(r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b", val):
+                                ip = val
+                            elif val != "<STOP>":
+                                nickname = val
+
+                        if ip != "" and nickname != "":
+                            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nickname))
+                            print("Ledger updated: ")
+                            print(clients)
+                            is_update = False
+                            ip = ""
+                            nickname = ""
+            except:
+                break
