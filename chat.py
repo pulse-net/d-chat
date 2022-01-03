@@ -5,92 +5,12 @@ import threading
 
 from ledger import Ledger
 from ledger_entry import LedgerEntry
-
-
-def send_ledger_entry(client, ledger_entry):
-    client.send(ledger_entry.ip_address.encode('ascii'))
-    client.send('<END>'.encode('ascii'))
-    client.send(ledger_entry.nick_name.encode('ascii'))
-    client.send('<END>'.encode('ascii'))
-
-
-def send_ledger(client, ledger):
-    for entry in ledger.ledger:
-        send_ledger_entry(client=client, ledger_entry=entry)
-
-    client.send("<STOP>".encode('ascii'))
-
-
-def update_ledger(client, ledger_entry):
-    client.send("<UPDATE>".encode('ascii'))
-
-    send_ledger_entry(client=client, ledger_entry=ledger_entry)
-
-    client.send("<STOP>".encode('ascii'))
-
-
-def get_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    s.connect(("8.8.8.8", 1))
-    IP = s.getsockname()[0]
-    s.close()
-
-    return IP
-
-
-def listen_for_client_messages(client):
-    while True:
-        try:
-            message = client.recv(1024).decode('ascii')
-
-            if message == "<STOP>":
-                break
-
-            if len(message) > 0:
-                print(message)
-
-                for client_socket in client_list:
-                    if client_socket != client:
-                        client_socket.send(f"\n{message}".encode('ascii'))
-        except:
-            break
-
-
-def listen_for_requests():
-    print("Server is listening...")
-    while True:
-        client, address = server.accept()
-        print(f'Connected with {str(address)}')
-
-        nickname = client.recv(1024).decode()
-
-        client_ledger = LedgerEntry(ip_address=address[0], nick_name=nickname)
-        clients.add_entry(ledger_entry=client_ledger)
-
-        print("Clients connected: ")
-        print(clients)
-
-        thread = threading.Thread(target=send_ledger, args=(client, clients))
-        thread.start()
-        thread.join()
-
-        for i, client_send in enumerate(client_list):
-            update_ledger(client_send, client_ledger)
-            print(f"Sent to: {clients[i+1]}")
-
-        client_list.append(client)
-
-        listen_message_thread = threading.Thread(target=listen_for_client_messages, args=(client,))
-        listen_message_thread.start()
-
-
-def send_message():
-    while True:
-        message = input(f"{clients[0].nick_name}> ")
-
-        for client in client_list:
-            client.send(f"\n{clients[0].nick_name}> {message}".encode('ascii'))
+from node import Node
+from creator import Creator
+from listen_clients import ListenClient
+from send_joinee_msgs import SendJoineeMessage
+from role import Role
+from action import Action
 
 
 def listen_messages(client, clients):
@@ -137,39 +57,28 @@ def send_message_client(client, nickname):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Decentralized chat")
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(description="Decentralized chat")
     parser.add_argument("--create", action="store_true", default=False, help="Create a new chat")
     parser.add_argument("--join", action="store_true", default=False, help="Join an existing chat")
 
-    args = parser.parse_args()
+    args: argparse.Namespace = parser.parse_args()
 
     if args.create:
-        clients = Ledger()
+        nickname: str = input("Enter your nickname: ")
+        server_node: Node = Node(nickname=nickname)
 
-        nickname = input("Enter your nickname: ")
+        print(server_node.ledger)
 
-        host = '0.0.0.0'
-        port = 12345
+        listen_requests_action: Action = ListenClient()
+        send_joinee_message_action: Action = SendJoineeMessage()
 
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind((host, port))
-        server.listen()
+        creator_role: Role = Creator()
+        creator_role.hook_action(action=listen_requests_action)
+        creator_role.hook_action(action=send_joinee_message_action)
 
-        self_client = LedgerEntry(ip_address=get_ip(), nick_name=nickname)
-        clients.add_entry(ledger_entry=self_client)
+        server_node.hook_role(role=creator_role)
 
-        client_list = []
-
-        print(clients)
-
-        listen_thread = threading.Thread(target=listen_for_requests)
-        listen_thread.start()
-
-        send_thread = threading.Thread(target=send_message)
-        send_thread.start()
-
-        listen_thread.join()
-        send_thread.join()
+        server_node.start()
     elif args.join:
         ip = input("Enter the IP address of the chat node: ") 
         nickname = input("Enter your nickname: ")
