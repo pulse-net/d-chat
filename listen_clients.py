@@ -9,7 +9,7 @@ from action import Action
 
 class ListenClient(Action):
     def __init__(self) -> None:
-        self.__thread_values: Dict = {}
+        super(ListenClient, self).__init__()
 
     @staticmethod
     def __send_ledger_entry(client: socket.socket, ledger_entry: LedgerEntry) -> None:
@@ -49,15 +49,12 @@ class ListenClient(Action):
             except:
                 break
 
-    def register_values(self, **kwargs) -> None:
-        self.__thread_values = kwargs
-
     def start(self) -> None:
         print("Server is listening...")
 
-        server = self.__thread_values.get('server')
-        clients = self.__thread_values.get('clients')
-        client_list = self.__thread_values.get('client_list')
+        server = self._thread_values.get('server')
+        clients = self._thread_values.get('clients')
+        client_list = self._thread_values.get('client_list')
 
         while True:
             client, address = server.accept()

@@ -47,6 +47,10 @@ class Role:
         """
         self.__actions.append(action)
 
+    @abstractmethod
+    def register_values(self, **kwargs):
+        pass
+
     @property
     @abstractmethod
     def server(self) -> str:

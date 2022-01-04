@@ -6,9 +6,11 @@ from ledger import Ledger
 
 
 class Action:
-    @abstractmethod
+    def __init__(self):
+        self._thread_values = {}
+
     def register_values(self, **kwargs) -> None:
-        pass
+        self._thread_values = kwargs
 
     @abstractmethod
     def start(self) -> None:

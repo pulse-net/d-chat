@@ -7,6 +7,7 @@ from ledger import Ledger
 from ledger_entry import LedgerEntry
 from node import Node
 from creator import Creator
+from joiner import Joiner
 from listen_clients import ListenClient
 from send_joinee_msgs import SendJoineeMessage
 from role import Role
@@ -78,45 +79,28 @@ if __name__ == "__main__":
 
         server_node.hook_role(role=creator_role)
         server_node.start()
-    elif args.join:
-        ip = input("Enter the IP address of the chat node: ") 
-        nickname = input("Enter your nickname: ")
-
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect((ip, 12345))
-
-        client.send(nickname.encode())
-
-        ips = []
-        nicknames = []
-        while True:
-            try:
-                ip_nickname = client.recv(1024)
-                ip_nickname = [val for val in ip_nickname.decode('ascii').split('<END>') if len(val) > 0]                
-
-                for val in ip_nickname:
-                    if re.match(r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b", val):
-                        ips.append(val)
-                    elif val != "<STOP>":
-                        nicknames.append(val)
-
-                if "<STOP>" in ip_nickname:
-                    break
-            except:
-                break
-
-        clients = Ledger()
-        for ip, nick_name in zip(ips, nicknames):
-            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nick_name))
-
-        print("Initial ledger: ")
-        print(clients)
-
-        listen_thread = threading.Thread(target=listen_messages, args=(client, clients))
-        listen_thread.start()
-
-        send_thread = threading.Thread(target=send_message_client, args=(client, nickname))
-        send_thread.start()
-
-        listen_thread.join()
-        send_thread.join()
+    # elif args.join:
+    #     ip = input("Enter the IP address of the chat node: ")
+    #     nickname = input("Enter your nickname: ")
+    #     client_node: Node = Node(nickname=nickname)
+    #
+    #     joiner_role: Role = Joiner()
+    #     joiner_role.register_values(server_ip=ip, nickname=nickname)
+    #
+    #
+    #
+    #     clients = Ledger()
+    #     for ip, nick_name in zip(ips, nicknames):
+    #         clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nick_name))
+    #
+    #     print("Initial ledger: ")
+    #     print(clients)
+    #
+    #     listen_thread = threading.Thread(target=listen_messages, args=(client, clients))
+    #     listen_thread.start()
+    #
+    #     send_thread = threading.Thread(target=send_message_client, args=(client, nickname))
+    #     send_thread.start()
+    #
+    #     listen_thread.join()
+    #     send_thread.join()

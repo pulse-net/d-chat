@@ -7,14 +7,11 @@ from ledger import Ledger
 
 class SendJoineeMessage(Action):
     def __init__(self) -> None:
-        self.__thread_values = {}
-
-    def register_values(self, **kwargs) -> None:
-        self.__thread_values = kwargs
+        super(SendJoineeMessage, self).__init__()
 
     def start(self) -> None:
-        clients = self.__thread_values.get('clients')
-        client_list = self.__thread_values.get('client_list')
+        clients = self._thread_values.get('clients')
+        client_list = self._thread_values.get('client_list')
 
         while True:
             message = input(f"{clients[0].nick_name}> ")
