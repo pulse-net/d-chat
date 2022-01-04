@@ -6,6 +6,7 @@ all of these actions have to be run in an infinite loop in their own thread.
 from typing import List
 
 from role import Role
+from action import Action
 from ledger import Ledger
 from ledger_entry import LedgerEntry
 import helper
@@ -32,10 +33,16 @@ class Node:
         """
         for role in self.__roles:
             role.start()
-
-    def start_threads(self) -> None:
-        for role in self.__roles:
+            self.__register_action_values(role, role.actions)
             role.start_threads()
+
+    def __register_action_values(self, role: Role, actions: List[Action]) -> None:
+        for action in actions:
+            action.register_values(
+                server=role.server,
+                client_list=role.client_list,
+                clients=self.__ledger,
+            )
 
     def hook_role(self, role: Role) -> None:
         """

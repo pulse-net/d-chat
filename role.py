@@ -56,3 +56,7 @@ class Role:
     @abstractmethod
     def client_list(self) -> List[socket.socket]:
         pass
+
+    @property
+    def actions(self) -> List[Action]:
+        return self.__actions

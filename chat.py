@@ -74,25 +74,10 @@ if __name__ == "__main__":
 
         creator_role: Role = Creator()
         creator_role.hook_action(action=listen_requests_action)
-
         creator_role.hook_action(action=send_joinee_message_action)
 
         server_node.hook_role(role=creator_role)
-
         server_node.start()
-
-        listen_requests_action.register_values(
-            server=creator_role.server,
-            client_list=creator_role.client_list,
-            clients=server_node.ledger,
-        )
-
-        send_joinee_message_action.register_values(
-            client_list=creator_role.client_list,
-            clients=server_node.ledger,
-        )
-
-        server_node.start_threads()
     elif args.join:
         ip = input("Enter the IP address of the chat node: ") 
         nickname = input("Enter your nickname: ")
