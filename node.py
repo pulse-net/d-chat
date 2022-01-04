@@ -33,16 +33,15 @@ class Node:
         """
         for role in self.__roles:
             role.start()
-            self.__register_action_values(role, role.actions)
-            role.start_threads()
 
-    def __register_action_values(self, role: Role, actions: List[Action]) -> None:
-        for action in actions:
-            action.register_values(
-                server=role.server,
-                client_list=role.client_list,
-                clients=self.__ledger,
-            )
+    def register_action_values(self, **kwargs) -> None:
+        for role in self.__roles:
+            for action in role.actions:
+                action.register_values(**kwargs)
+
+    def start_threads(self) -> None:
+        for role in self.__roles:
+            role.start_threads()
 
     def hook_role(self, role: Role) -> None:
         """
@@ -51,6 +50,10 @@ class Node:
         role: Role to be hooked.
         """
         self.__roles.append(role)
+
+    @property
+    def nickname(self) -> str:
+        return self.__nickname
 
     @property
     def ledger(self) -> Ledger:

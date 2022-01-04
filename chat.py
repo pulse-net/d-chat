@@ -1,60 +1,21 @@
 import argparse
-import socket
 import re
 import threading
 
-from ledger import Ledger
-from ledger_entry import LedgerEntry
 from node import Node
 from creator import Creator
 from joiner import Joiner
 from listen_clients import ListenClient
 from send_joinee_msgs import SendJoineeMessage
+from listen_initial_ledger import ListenInitialLedger
+from listen_joiner_msgs import ListenJoinerMsgs
+from send_joiner_msgs import SendJoinerMsgs
 from role import Role
 from action import Action
 
 
-def listen_messages(client, clients):
-    is_update = False
-    ip = ""
-    nickname = ""
-    
-    while True:
-        try:
-            message = client.recv(1024)
-            message = message.decode('ascii')
-
-            if "<UPDATE>" in message:
-                is_update = True
-
-            message = [val for val in message.split('<END>') if len(val) > 0]
-
-            if len(message) > 0:
-                if is_update:
-                    for val in message:
-                        if re.match(r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b", val):
-                            ip = val
-                        elif val != "<STOP>":
-                            nickname = val
-
-                    if ip != "" and nickname != "":
-                        clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nickname))
-                        print("Ledger updated: ")
-                        print(clients)
-                        is_update = False
-                        ip = ""
-                        nickname = ""
-                else:
-                    for val in message:
-                        print(val)
-        except:
-            break
-
-
 def send_message_client(client, nickname):
-    while True:
-        message = input(f"{nickname}> ")
-        client.send(f"\n{nickname}> {message}".encode('ascii'))
+    pass
 
 
 if __name__ == "__main__":
@@ -79,28 +40,34 @@ if __name__ == "__main__":
 
         server_node.hook_role(role=creator_role)
         server_node.start()
-    # elif args.join:
-    #     ip = input("Enter the IP address of the chat node: ")
-    #     nickname = input("Enter your nickname: ")
-    #     client_node: Node = Node(nickname=nickname)
-    #
-    #     joiner_role: Role = Joiner()
-    #     joiner_role.register_values(server_ip=ip, nickname=nickname)
-    #
-    #
-    #
-    #     clients = Ledger()
-    #     for ip, nick_name in zip(ips, nicknames):
-    #         clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nick_name))
-    #
-    #     print("Initial ledger: ")
-    #     print(clients)
-    #
-    #     listen_thread = threading.Thread(target=listen_messages, args=(client, clients))
-    #     listen_thread.start()
-    #
-    #     send_thread = threading.Thread(target=send_message_client, args=(client, nickname))
-    #     send_thread.start()
-    #
-    #     listen_thread.join()
-    #     send_thread.join()
+
+        server_node.register_action_values(
+            server=creator_role.server,
+            client_list=creator_role.client_list,
+            clients=server_node.ledger,
+        )
+
+        server_node.start_threads()
+    elif args.join:
+        ip = input("Enter the IP address of the chat node: ")
+        nickname = input("Enter your nickname: ")
+        client_node: Node = Node(nickname=nickname)
+
+        listen_initial_ledger_action: Action = ListenInitialLedger()
+        listen_joiner_msgs_action: Action = ListenJoinerMsgs()
+        send_joiner_message_action: Action = SendJoinerMsgs()
+
+        joiner_role: Role = Joiner()
+        joiner_role.register_values(server_ip=ip, nickname=nickname)
+        joiner_role.hook_action(action=listen_initial_ledger_action)
+        joiner_role.hook_action(action=listen_joiner_msgs_action)
+        joiner_role.hook_action(action=send_joiner_message_action)
+
+        client_node.hook_role(role=joiner_role)
+        client_node.start()
+
+        client_node.register_action_values(
+            client=joiner_role.client,
+            clients=client_node.ledger,
+            nickname=client_node.nickname,
+        )

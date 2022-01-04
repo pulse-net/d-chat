@@ -1,6 +1,5 @@
 import socket
 from typing import Optional, Dict
-import re
 
 import constants
 from role import Role
@@ -25,21 +24,9 @@ class Joiner(Role):
 
         self.__client.send(nickname.encode())
 
-        ips = []
-        nicknames = []
-        while True:
-            try:
-                ip_nickname = self.__client.recv(1024)
-                ip_nickname = [val for val in ip_nickname.decode('ascii').split('<END>') if len(val) > 0]
+    @property
+    def client(self) -> socket.socket:
+        return self.__client
 
-                for val in ip_nickname:
-                    if re.match(r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b", val):
-                        ips.append(val)
-                    elif val != "<STOP>":
-                        nicknames.append(val)
 
-                if "<STOP>" in ip_nickname:
-                    break
-            except:
-                break
 
