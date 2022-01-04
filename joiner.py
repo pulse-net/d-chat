@@ -12,15 +12,11 @@ class Joiner(Role):
         super().__init__()
 
         self.__client: Optional[socket.socket] = None
-        self.__joiner_values: Dict = {}
-
-    def register_values(self, **kwargs):
-        self.__joiner_values = kwargs
 
     def start(self) -> None:
-        server_ip = self.__joiner_values.get('server_ip')
-        nickname = self.__joiner_values.get('nickname')
-        clients = self.__joiner_values.get('clients')
+        server_ip = self._joiner_values.get('server_ip')
+        nickname = self._joiner_values.get('nickname')
+        clients = self._joiner_values.get('clients')
 
         self.__client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__client.connect((server_ip, constants.PORT))

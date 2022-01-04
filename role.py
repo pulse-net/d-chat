@@ -5,7 +5,7 @@ all of these actions have to be run in an infinite loop in their
 own thread.
 """
 import socket
-from typing import List
+from typing import List, Dict
 from abc import abstractmethod
 import threading
 
@@ -19,6 +19,7 @@ class Role:
     """
     def __init__(self) -> None:
         self.__actions: List[Action] = []
+        self._joiner_values: Dict = {}
 
     @abstractmethod
     def start(self) -> None:
@@ -47,9 +48,8 @@ class Role:
         """
         self.__actions.append(action)
 
-    @abstractmethod
     def register_values(self, **kwargs):
-        pass
+        self._joiner_values = kwargs
 
     @property
     @abstractmethod
