@@ -6,7 +6,16 @@ from ledger import Ledger
 
 
 class SendJoineeMessage(Action):
-    def start(self, server: socket.socket, clients: Ledger, client_list: List[socket.socket]) -> None:
+    def __init__(self) -> None:
+        self.__thread_values = {}
+
+    def register_values(self, **kwargs) -> None:
+        self.__thread_values = kwargs
+
+    def start(self) -> None:
+        clients = self.__thread_values.get('clients')
+        client_list = self.__thread_values.get('client_list')
+
         while True:
             message = input(f"{clients[0].nick_name}> ")
 

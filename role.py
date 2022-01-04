@@ -5,7 +5,7 @@ all of these actions have to be run in an infinite loop in their
 own thread.
 """
 import socket
-from typing import List, Optional
+from typing import List
 from abc import abstractmethod
 import threading
 
@@ -21,25 +21,23 @@ class Role:
         self.__actions: List[Action] = []
 
     @abstractmethod
-    def start(self, clients: Ledger) -> None:
+    def start(self) -> None:
         pass
 
-    def start_actions(self, server: socket.socket, clients: Ledger,
-                      client_list: Optional[List[socket.socket]] = None) -> None:
+    def start_threads(self) -> None:
         """
         Starts all the actions of the role.
         """
         threads = []
         for action in self.__actions:
-            thread = threading.Thread(target=action.start,
-                                      args=(server, clients, client_list))
+            thread = threading.Thread(target=action.start)
             threads.append(thread)
 
         for thread in threads:
             thread.start()
 
-        # for thread in threads:
-        #     thread.join()
+        for thread in threads:
+            thread.join()
 
     def hook_action(self, action: Action) -> None:
         """
@@ -48,3 +46,13 @@ class Role:
         action: Action to be hooked.
         """
         self.__actions.append(action)
+
+    @property
+    @abstractmethod
+    def server(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def client_list(self) -> List[socket.socket]:
+        pass

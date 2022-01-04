@@ -20,15 +20,22 @@ class Node:
         self.__ledger: Ledger = Ledger()
         self.__roles: List[Role] = []
 
+        self.__self_ledger_update()
+
+    def __self_ledger_update(self) -> None:
+        self_client = LedgerEntry(ip_address=helper.get_ip(), nick_name=self.__nickname)
+        self.__ledger.add_entry(self_client)
+
     def start(self) -> None:
         """
         Starts all the threads in every role of the node.
         """
-        self_client = LedgerEntry(ip_address=helper.get_ip(), nick_name=self.__nickname)
-        self.__ledger.add_entry(self_client)
-
         for role in self.__roles:
-            role.start(clients=self.__ledger)
+            role.start()
+
+    def start_threads(self) -> None:
+        for role in self.__roles:
+            role.start_threads()
 
     def hook_role(self, role: Role) -> None:
         """

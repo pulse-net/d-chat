@@ -1,7 +1,7 @@
 """
 The one who creates a chat or is in charge of a chat
 if the original creator drops off from the network.
-A creator listens for new incoming requests from 
+A creator listens for new incoming requests from
 other nodes, updates and broadcasts ledger, listens
 for and forwards messages to all other nodes.
 """
@@ -22,16 +22,15 @@ class Creator(Role):
 
         self.__server: Optional[socket.socket] = None
         self.__client_list = []
+        self.__clients: Ledger = Ledger()
 
-    def start(self, clients: Ledger) -> None:
+    def start(self) -> None:
         """
         Starts the creator role.
         """
         self.__server: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__server.bind((constants.HOST, constants.PORT))
         self.__server.listen()
-
-        self.start_actions(server=self.__server, clients=clients, client_list=self.__client_list)
 
     @property
     def server(self) -> socket.socket:
