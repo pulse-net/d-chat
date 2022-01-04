@@ -11,7 +11,8 @@ class Ledger:
         self.__ledger.extend(ledger_entries)
 
     def add_entry(self, ledger_entry: LedgerEntry) -> None:
-        self.__ledger.append(ledger_entry)
+        if ledger_entry not in self.__ledger:
+            self.__ledger.append(ledger_entry)
 
     @property
     def ledger(self) -> List[LedgerEntry]:

@@ -7,7 +7,6 @@ from creator import Creator
 from joiner import Joiner
 from listen_clients import ListenClient
 from send_joinee_msgs import SendJoineeMessage
-from listen_initial_ledger import ListenInitialLedger
 from listen_joiner_msgs import ListenJoinerMsgs
 from send_joiner_msgs import SendJoinerMsgs
 from role import Role
@@ -53,13 +52,11 @@ if __name__ == "__main__":
         nickname = input("Enter your nickname: ")
         client_node: Node = Node(nickname=nickname)
 
-        listen_initial_ledger_action: Action = ListenInitialLedger()
         listen_joiner_msgs_action: Action = ListenJoinerMsgs()
         send_joiner_message_action: Action = SendJoinerMsgs()
 
         joiner_role: Role = Joiner()
-        joiner_role.register_values(server_ip=ip, nickname=nickname)
-        joiner_role.hook_action(action=listen_initial_ledger_action)
+        joiner_role.register_values(server_ip=ip, nickname=nickname, clients=client_node.ledger)
         joiner_role.hook_action(action=listen_joiner_msgs_action)
         joiner_role.hook_action(action=send_joiner_message_action)
 
@@ -71,3 +68,5 @@ if __name__ == "__main__":
             clients=client_node.ledger,
             nickname=client_node.nickname,
         )
+
+        client_node.start_threads()

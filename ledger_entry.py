@@ -16,3 +16,6 @@ class LedgerEntry:
 
     def __str__(self) -> str:
         return f"{self.__ip_address}: {self.__nick_name}"
+
+    def __eq__(self, other: 'LedgerEntry') -> bool:
+        return self.__ip_address == other.ip_address
