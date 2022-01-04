@@ -1,8 +1,4 @@
-from typing import List
-import socket
-
-from action import Action
-from ledger import Ledger
+from .action import Action
 
 
 class SendJoineeMessage(Action):

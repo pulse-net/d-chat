@@ -5,11 +5,10 @@ all of these actions have to be run in an infinite loop in their own thread.
 """
 from typing import List
 
-from role import Role
-from action import Action
-from ledger import Ledger
-from ledger_entry import LedgerEntry
-import helper
+from ..roles.role import Role
+from ..ledger.ledger import Ledger
+from ..ledger.ledger_entry import LedgerEntry
+from ..utils import helper
 
 
 class Node:

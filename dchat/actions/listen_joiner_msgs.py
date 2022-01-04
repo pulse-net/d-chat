@@ -1,7 +1,7 @@
 import re
 
-from action import Action
-from ledger_entry import LedgerEntry
+from .action import Action
+from ..ledger.ledger_entry import LedgerEntry
 
 
 class ListenJoinerMsgs(Action):

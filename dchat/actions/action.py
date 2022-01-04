@@ -1,8 +1,4 @@
 from abc import abstractmethod
-import socket
-from typing import List
-
-from ledger import Ledger
 
 
 class Action:

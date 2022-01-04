@@ -9,8 +9,7 @@ from typing import List, Dict
 from abc import abstractmethod
 import threading
 
-from action import Action
-from ledger import Ledger
+from ..actions.action import Action
 
 
 class Role:

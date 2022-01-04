@@ -1,23 +1,17 @@
 import argparse
-import re
-import threading
 
-from node import Node
-from creator import Creator
-from joiner import Joiner
-from listen_clients import ListenClient
-from send_joinee_msgs import SendJoineeMessage
-from listen_joiner_msgs import ListenJoinerMsgs
-from send_joiner_msgs import SendJoinerMsgs
-from role import Role
-from action import Action
+from .node.node import Node
+from .roles.creator import Creator
+from .roles.joiner import Joiner
+from .roles.role import Role
+from .actions.listen_clients import ListenClient
+from .actions.send_joinee_msgs import SendJoineeMessage
+from .actions.listen_joiner_msgs import ListenJoinerMsgs
+from .actions.send_joiner_msgs import SendJoinerMsgs
+from .actions.action import Action
 
 
-def send_message_client(client, nickname):
-    pass
-
-
-if __name__ == "__main__":
+def main():
     parser: argparse.ArgumentParser = argparse.ArgumentParser(description="Decentralized chat")
     parser.add_argument("--create", action="store_true", default=False, help="Create a new chat")
     parser.add_argument("--join", action="store_true", default=False, help="Join an existing chat")

@@ -8,9 +8,9 @@ for and forwards messages to all other nodes.
 import socket
 from typing import Optional, List
 
-from role import Role
-import constants
-from ledger import Ledger
+from .role import Role
+from ..utils import constants
+from ..ledger.ledger import Ledger
 
 
 class Creator(Role):

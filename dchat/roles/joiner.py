@@ -2,9 +2,9 @@ import socket
 from typing import Optional, Dict
 import re
 
-import constants
-from role import Role
-from ledger_entry import LedgerEntry
+from ..utils import constants
+from .role import Role
+from ..ledger.ledger_entry import LedgerEntry
 
 
 class Joiner(Role):

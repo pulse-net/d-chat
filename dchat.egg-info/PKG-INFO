@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: dchat
+Version: 0.1a0
+Summary: Decentralized chat application
+Home-page: https://github.com/pulse-net/d-chat
+Author: Siddhartha Dhar Choudhury
+Author-email: sdharchou@gmail.com
+License: MIT
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.6
+Description-Content-Type: text/markdown
+
+# d-chat
+
+Decentralized text messaging application using python sockets. 
+
+
