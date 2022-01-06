@@ -17,6 +17,10 @@ class ListenClient(Action):
         client.send('<END>'.encode('ascii'))
         client.send(ledger_entry.nick_name.encode('ascii'))
         client.send('<END>'.encode('ascii'))
+        client.send(str(ledger_entry.timestamp).encode('ascii'))
+        client.send('<END>'.encode('ascii'))
+        client.send(ledger_entry.daddr.encode('ascii'))
+        client.send('<END>'.encode('ascii'))
 
     def __send_ledger(self, client: socket.socket, ledger: Ledger):
         for entry in ledger.ledger:

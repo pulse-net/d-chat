@@ -25,18 +25,24 @@ class Joiner(Role):
 
         ips = []
         nicknames = []
+        timestamps = []
+        daddrs = []
         while True:
             try:
-                ip_nickname = self.__client.recv(1024)
-                ip_nickname = [val for val in ip_nickname.decode('ascii').split('<END>') if len(val) > 0]
+                ledger_info = self.__client.recv(1024)
+                ledger_info = [val for val in ledger_info.decode('ascii').split('<END>') if len(val) > 0]
 
-                for val in ip_nickname:
+                for val in ledger_info:
                     if re.match(r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b", val):
                         ips.append(val)
+                    elif re.match(r"\d+\.\d+", val):
+                        timestamps.append(val)
+                    elif re.match(r"[0-9a-fA-F]+", val) and len(val) == 10:
+                        daddrs.append(val)
                     elif val != "<STOP>":
                         nicknames.append(val)
 
-                if "<STOP>" in ip_nickname:
+                if "<STOP>" in ledger_info:
                     break
             except:
                 break
