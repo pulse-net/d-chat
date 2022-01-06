@@ -31,6 +31,8 @@ class Node:
         Starts all the threads in every role of the node.
         """
         for role in self.__roles:
+            if role.role_type == "Joiner":
+                self.__ledger = Ledger()
             role.start()
 
     def register_action_values(self, **kwargs) -> None:
