@@ -32,7 +32,7 @@ class Node:
         """
         for role in self.__roles:
             if role.role_type == "Joiner":
-                self.__ledger = Ledger()
+                self.__ledger.empty_ledger()
             role.start()
 
     def register_action_values(self, **kwargs) -> None:

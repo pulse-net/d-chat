@@ -14,6 +14,9 @@ class Ledger:
         if ledger_entry not in self.__ledger:
             self.__ledger.append(ledger_entry)
 
+    def empty_ledger(self) -> None:
+        self.__ledger = []
+
     @property
     def ledger(self) -> List[LedgerEntry]:
         return self.__ledger
