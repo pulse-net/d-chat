@@ -31,8 +31,17 @@ class LedgerEntry:
     def nick_name(self) -> str:
         return self.__nick_name
 
+    @property
+    def timestamp(self) -> float:
+        return self.__timestamp
+
+    @property
+    def daddr(self) -> str:
+        return self.__daddr
+
     def __str__(self) -> str:
         return f"{self.__ip_address}: {self.__nick_name} ({self.__timestamp}) -> {self.__daddr}"
 
     def __eq__(self, other: 'LedgerEntry') -> bool:
-        return self.__ip_address == other.ip_address
+        return self.__ip_address == other.ip_address and self.__nick_name == other.nick_name \
+            and self.__timestamp == other.timestamp and self.__daddr == other.daddr
