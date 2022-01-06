@@ -15,6 +15,8 @@ class ListenJoinerMsgs(Action):
         is_update = False
         ip = ""
         nickname = ""
+        timestamp = ""
+        daddr = ""
 
         while True:
             try:
@@ -31,11 +33,16 @@ class ListenJoinerMsgs(Action):
                         for val in message:
                             if re.match(r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b", val):
                                 ip = val
+                            elif re.match(r"\d+\.\d+", val):
+                                timestamp = val
+                            elif re.match(r"[0-9a-fA-F]+", val) and len(val) == 10:
+                                daddr = val
                             elif val != "<STOP>":
                                 nickname = val
 
-                        if ip != "" and nickname != "":
-                            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nickname))
+                        if ip != "" and nickname != "" and timestamp != "" and daddr != "":
+                            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nickname, 
+                                                          timestamp=timestamp, daddr=daddr))
                             print("Ledger updated: ")
                             print(clients)
                             is_update = False

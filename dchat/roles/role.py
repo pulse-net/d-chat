@@ -68,3 +68,7 @@ class Role:
     @property
     def actions(self) -> List[Action]:
         return self.__actions
+
+    @property
+    def role_type(self) -> str:
+        return self.__class__.__name__

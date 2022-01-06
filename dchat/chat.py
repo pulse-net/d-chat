@@ -22,8 +22,6 @@ def main():
         nickname: str = input("Enter your nickname: ")
         server_node: Node = Node(nickname=nickname)
 
-        print(server_node.ledger)
-
         listen_requests_action: Action = ListenClient()
         send_joinee_message_action: Action = SendJoineeMessage()
 
@@ -33,6 +31,8 @@ def main():
 
         server_node.hook_role(role=creator_role)
         server_node.start()
+
+        print(server_node.ledger)
 
         server_node.register_action_values(
             server=creator_role.server,
@@ -62,5 +62,7 @@ def main():
             clients=client_node.ledger,
             nickname=client_node.nickname,
         )
+
+        print(client_node.ledger)
 
         client_node.start_threads()
