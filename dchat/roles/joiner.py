@@ -47,8 +47,8 @@ class Joiner(Role):
             except:
                 break
 
-        for ip, nick_name in zip(ips, nicknames):
-            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nick_name))
+        for ip, nick_name, timestamp, daddr in zip(ips, nicknames, timestamps, daddrs):
+            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nick_name, timestamp=timestamp, daddr=daddr))
 
     @property
     def client(self) -> socket.socket:

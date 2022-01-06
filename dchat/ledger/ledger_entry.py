@@ -1,4 +1,5 @@
 import time
+from typing import Optional
 
 from ..utils import constants
 
@@ -6,11 +7,12 @@ from ..utils import constants
 class LedgerEntry:
     _current_hex_str = "0" * constants.DADDR_LENGTH
 
-    def __init__(self, ip_address: str, nick_name: str) -> None:
+    def __init__(self, ip_address: str, nick_name: str, 
+                 timestamp: Optional[str] = None, daddr: Optional[str] = None) -> None:
         self.__ip_address = ip_address
         self.__nick_name = nick_name
-        self.__timestamp = time.time()
-        self.__daddr = self.__generate_next_hex()
+        self.__timestamp = time.time() if not timestamp else timestamp
+        self.__daddr = self.__generate_next_hex() if not daddr else daddr
 
     @classmethod
     def __generate_next_hex(cls) -> str:
