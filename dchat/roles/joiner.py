@@ -44,9 +44,6 @@ class Joiner(Role):
         for ip, nick_name in zip(ips, nicknames):
             clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nick_name))
 
-        print("Initial ledger: ")
-        print(clients)
-
     @property
     def client(self) -> socket.socket:
         return self.__client
