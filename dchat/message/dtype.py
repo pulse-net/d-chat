@@ -7,3 +7,4 @@ class DType(Enum):
     LEDGER_TIMESTAMP = 2
     LEDGER_DADDR = 3
     MSG = 4
+    NONE = 5

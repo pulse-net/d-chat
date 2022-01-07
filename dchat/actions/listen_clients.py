@@ -5,6 +5,9 @@ from typing import List, Dict
 from ..ledger.ledger import Ledger
 from ..ledger.ledger_entry import LedgerEntry
 from .action import Action
+from ..message.message import Message
+from ..message.command import Command
+from ..message.dtype import DType
 
 
 class ListenClient(Action):
@@ -13,27 +16,30 @@ class ListenClient(Action):
 
     @staticmethod
     def __send_ledger_entry(client: socket.socket, ledger_entry: LedgerEntry) -> None:
-        client.send(ledger_entry.ip_address.encode('ascii'))
-        client.send('<END>'.encode('ascii'))
-        client.send(ledger_entry.nick_name.encode('ascii'))
-        client.send('<END>'.encode('ascii'))
-        client.send(str(ledger_entry.timestamp).encode('ascii'))
-        client.send('<END>'.encode('ascii'))
-        client.send(ledger_entry.daddr.encode('ascii'))
-        client.send('<END>'.encode('ascii'))
+        message = Message(Command.LEDGER_ENTRY, DType.LEDGER_IP, ledger_entry.ip_address)
+        client.send(message.serialize())
+
+        message = Message(Command.LEDGER_ENTRY, DType.LEDGER_NICKNAME, ledger_entry.nick_name)
+        client.send(message.serialize())
+
+        message = Message(Command.LEDGER_ENTRY, DType.LEDGER_TIMESTAMP, str(ledger_entry.timestamp))
+        client.send(message.serialize())
+
+        message = Message(Command.LEDGER_ENTRY, DType.LEDGER_DADDR, ledger_entry.daddr)
+        client.send(message.serialize())
 
     def __send_ledger(self, client: socket.socket, ledger: Ledger):
         for entry in ledger.ledger:
             self.__send_ledger_entry(client=client, ledger_entry=entry)
 
-        client.send("<STOP>".encode('ascii'))
+        message = Message(Command.END_MSG, DType.NONE, "")
+        client.send(message.serialize())
 
     def __update_ledger(self, client: socket.socket, ledger_entry: LedgerEntry) -> None:
-        client.send("<UPDATE>".encode('ascii'))
-
         self.__send_ledger_entry(client=client, ledger_entry=ledger_entry)
 
-        client.send("<STOP>".encode('ascii'))
+        message = Message(Command.END_MSG, DType.NONE, "")
+        client.send(message.serialize())
 
     @staticmethod
     def __listen_for_client_messages(client: socket.socket, client_list: List[socket.socket]) -> None:

@@ -1,5 +1,8 @@
+import pickle
+
 from .command import Command
 from .dtype import DType
+from ..utils import constants
 
 
 class Message:
@@ -22,3 +25,9 @@ class Message:
 
     def __str__(self) -> str:
         return f"[{self.__cmd}]: {self.__dtype} -> {self.__msg}"
+
+    def serialize(self) -> bytes:
+        msg = pickle.dumps(self)
+        msg = bytes(f"{len(msg):<{constants.MSG_HEADER_LENGTH}}", "utf-8") + msg
+
+        return msg
