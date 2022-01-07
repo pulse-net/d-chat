@@ -36,6 +36,9 @@ class ListenClient(Action):
         for entry in ledger.ledger:
             self.__send_ledger_entry(client=client, ledger_entry=entry)
 
+        message = Message(Command.STOP_SEND, DType.NONE, "")
+        client.send(message.serialize())
+
     def __update_ledger(self, client: socket.socket, ledger_entry: LedgerEntry) -> None:
         self.__send_ledger_entry(client=client, ledger_entry=ledger_entry)
 
