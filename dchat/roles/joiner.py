@@ -51,7 +51,6 @@ class Joiner(Role):
 
                     if len(remaining_message) == msg_len:
                         message = pickle.loads(remaining_message)
-                        print(message)
                         current_message = b""
                     else:
                         current_message += remaining_message
@@ -62,7 +61,6 @@ class Joiner(Role):
 
                     if len(current_message) == msg_len:
                         message = pickle.loads(current_message)
-                        print(message)
                         current_message = b""
 
                 if message is not None:
