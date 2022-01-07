@@ -28,6 +28,5 @@ class Message:
 
     def serialize(self) -> bytes:
         msg = pickle.dumps(self)
-        msg = bytes(f"{len(msg):<{constants.MSG_HEADER_LENGTH}}", "utf-8") + msg
 
         return msg

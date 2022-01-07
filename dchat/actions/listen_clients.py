@@ -18,28 +18,26 @@ class ListenClient(Action):
     def __send_ledger_entry(client: socket.socket, ledger_entry: LedgerEntry) -> None:
         message = Message(Command.LEDGER_ENTRY, DType.LEDGER_IP, ledger_entry.ip_address)
         client.send(message.serialize())
+        client.send("<END>".encode("utf-8"))
 
         message = Message(Command.LEDGER_ENTRY, DType.LEDGER_NICKNAME, ledger_entry.nick_name)
         client.send(message.serialize())
+        client.send("<END>".encode("utf-8"))
 
         message = Message(Command.LEDGER_ENTRY, DType.LEDGER_TIMESTAMP, str(ledger_entry.timestamp))
         client.send(message.serialize())
+        client.send("<END>".encode("utf-8"))
 
         message = Message(Command.LEDGER_ENTRY, DType.LEDGER_DADDR, ledger_entry.daddr)
         client.send(message.serialize())
+        client.send("<END>".encode("utf-8"))
 
     def __send_ledger(self, client: socket.socket, ledger: Ledger):
         for entry in ledger.ledger:
             self.__send_ledger_entry(client=client, ledger_entry=entry)
 
-        message = Message(Command.END_MSG, DType.NONE, "")
-        client.send(message.serialize())
-
     def __update_ledger(self, client: socket.socket, ledger_entry: LedgerEntry) -> None:
         self.__send_ledger_entry(client=client, ledger_entry=ledger_entry)
-
-        message = Message(Command.END_MSG, DType.NONE, "")
-        client.send(message.serialize())
 
     @staticmethod
     def __listen_for_client_messages(client: socket.socket, client_list: List[socket.socket]) -> None:
