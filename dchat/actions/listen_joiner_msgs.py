@@ -22,9 +22,9 @@ class ListenJoinerMsgs(Action):
         daddr = ""
         is_message_remaining = False
         current_message = b""
+        msg_len = 0
 
         while True:
-            # try:
             message = client.recv(1024)
             messages = message.split(b"<END>")
 
@@ -73,7 +73,3 @@ class ListenJoinerMsgs(Action):
                             nickname = ""
                             timestamp = ""
                             daddr = ""
-            # except Exception as e:
-            #     print(e)
-            #     break
-

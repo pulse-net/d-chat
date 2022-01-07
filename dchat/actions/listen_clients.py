@@ -1,6 +1,7 @@
 import socket
 import threading
 from typing import List, Dict
+import pickle
 
 from ..ledger.ledger import Ledger
 from ..ledger.ledger_entry import LedgerEntry
@@ -8,6 +9,7 @@ from .action import Action
 from ..message.message import Message
 from ..message.command import Command
 from ..message.dtype import DType
+from ..utils import constants
 
 
 class ListenClient(Action):
@@ -44,21 +46,45 @@ class ListenClient(Action):
 
     @staticmethod
     def __listen_for_client_messages(client: socket.socket, client_list: List[socket.socket]) -> None:
+        is_message_remaining = False
+        current_message = b""
+        msg_len = 0
+
         while True:
-            try:
-                message = client.recv(1024).decode('ascii')
+            message = client.recv(1024)
+            messages = message.split(b"<END>")
 
-                if message == "<STOP>":
-                    break
+            for message in messages:
+                if len(message) == 0:
+                    continue
 
-                if len(message) > 0:
-                    print(message)
+                if not is_message_remaining:
+                    msg_len = int(message[:constants.MSG_HEADER_LENGTH])
+                    remaining_message = message[constants.MSG_HEADER_LENGTH:]
 
-                    for client_socket in client_list:
-                        if client_socket != client:
-                            client_socket.send(f"\n{message}".encode('ascii'))
-            except:
-                break
+                    if len(remaining_message) == msg_len:
+                        message = pickle.loads(remaining_message)
+                        current_message = b""
+                    else:
+                        current_message += remaining_message
+                        is_message_remaining = True
+                else:
+                    current_message += message
+                    is_message_remaining = False
+
+                    if len(current_message) == msg_len:
+                        message = pickle.loads(current_message)
+                        current_message = b""
+
+                if message:
+                    if message.cmd == Command.MSG:
+                        print(message.msg)
+
+                        for client_socket in client_list:
+                            if client_socket != client:
+                                m = Message(Command.MSG, DType.MSG, message.msg)
+                                client_socket.send(m.serialize())
+                                client_socket.send("<END>".encode("utf-8"))
 
     def start(self) -> None:
         print("Server is listening...")
