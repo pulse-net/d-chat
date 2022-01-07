@@ -1,4 +1,7 @@
 from .action import Action
+from ..message.message import Message
+from ..message.command import Command
+from ..message.dtype import DType
 
 
 class SendJoinerMsgs(Action):
@@ -11,5 +14,7 @@ class SendJoinerMsgs(Action):
 
         while True:
             message = input(f"{nickname}> ")
-            client.send(f"\n{nickname}> {message}".encode('ascii'))
+            m = Message(Command.MSG, DType.MSG, f"\n{nickname}> {message}")
+            client.send(m.serialize())
+            client.send("<END>".encode("utf-8"))
 
