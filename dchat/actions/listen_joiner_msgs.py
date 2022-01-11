@@ -1,56 +1,77 @@
-import re
+import pickle
 
-from .action import Action
-from ..ledger.ledger_entry import LedgerEntry
+from dchat.actions.action import Action
+from dchat.ledger.ledger_entry import LedgerEntry
+from dchat.utils import constants
+from dchat.message.command import Command
+from dchat.message.dtype import DType
 
 
 class ListenJoinerMsgs(Action):
-    def __init__(self):
-        super(ListenJoinerMsgs, self).__init__()
-
     def start(self) -> None:
-        client = self._thread_values.get('client')
-        clients = self._thread_values.get('clients')
+        client = self._thread_values.get("client")
+        clients = self._thread_values.get("clients")
 
-        is_update = False
         ip = ""
         nickname = ""
         timestamp = ""
         daddr = ""
+        is_message_remaining = False
+        current_message = b""
+        msg_len = 0
 
         while True:
-            try:
-                message = client.recv(1024)
-                message = message.decode('ascii')
+            message = client.recv(1024)
+            messages = message.split(b"<END>")
 
-                if "<UPDATE>" in message:
-                    is_update = True
+            for message in messages:
+                if len(message) == 0:
+                    continue
 
-                message = [val for val in message.split('<END>') if len(val) > 0]
+                if not is_message_remaining:
+                    msg_len = int(message[: constants.MSG_HEADER_LENGTH])
+                    remaining_message = message[constants.MSG_HEADER_LENGTH :]
 
-                if len(message) > 0:
-                    if is_update:
-                        for val in message:
-                            if re.match(r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b", val):
-                                ip = val
-                            elif re.match(r"\d+\.\d+", val):
-                                timestamp = val
-                            elif re.match(r"[0-9a-fA-F]+", val) and len(val) == 10:
-                                daddr = val
-                            elif val != "<STOP>":
-                                nickname = val
+                    if len(remaining_message) == msg_len:
+                        message = pickle.loads(remaining_message)
+                        current_message = b""
+                    else:
+                        current_message += remaining_message
+                        is_message_remaining = True
+                else:
+                    current_message += message
+                    is_message_remaining = False
 
-                        if ip != "" and nickname != "" and timestamp != "" and daddr != "":
-                            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nickname, 
-                                                          timestamp=timestamp, daddr=daddr))
+                    if len(current_message) == msg_len:
+                        message = pickle.loads(current_message)
+                        current_message = b""
+
+                if message:
+                    if message.cmd == Command.MSG:
+                        print(message.msg)
+                    elif message.cmd == Command.LEDGER_ENTRY:
+                        if message.dtype == DType.LEDGER_IP:
+                            ip = message.msg
+                        elif message.dtype == DType.LEDGER_NICKNAME:
+                            nickname = message.msg
+                        elif message.dtype == DType.LEDGER_TIMESTAMP:
+                            timestamp = message.msg
+                        elif message.dtype == DType.LEDGER_DADDR:
+                            daddr = message.msg
+
+                        if ip and nickname and timestamp and daddr:
+                            clients.add_entry(
+                                LedgerEntry(
+                                    ip_address=ip,
+                                    nick_name=nickname,
+                                    timestamp=timestamp,
+                                    daddr=daddr,
+                                )
+                            )
                             print("Ledger updated: ")
                             print(clients)
-                            is_update = False
+
                             ip = ""
                             nickname = ""
-                    else:
-                        for val in message:
-                            print(val)
-            except:
-                break
-
+                            timestamp = ""
+                            daddr = ""

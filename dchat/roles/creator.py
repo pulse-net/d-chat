@@ -8,15 +8,16 @@ for and forwards messages to all other nodes.
 import socket
 from typing import Optional, List
 
-from .role import Role
-from ..utils import constants
-from ..ledger.ledger import Ledger
+from dchat.roles.role import Role
+from dchat.utils import constants
+from dchat.ledger.ledger import Ledger
 
 
 class Creator(Role):
     """
     Represents a creator/in-charge node of a chat.
     """
+
     def __init__(self) -> None:
         super().__init__()
 

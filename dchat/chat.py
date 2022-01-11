@@ -1,20 +1,26 @@
 import argparse
 
-from .node.node import Node
-from .roles.creator import Creator
-from .roles.joiner import Joiner
-from .roles.role import Role
-from .actions.listen_clients import ListenClient
-from .actions.send_joinee_msgs import SendJoineeMessage
-from .actions.listen_joiner_msgs import ListenJoinerMsgs
-from .actions.send_joiner_msgs import SendJoinerMsgs
-from .actions.action import Action
+from dchat.node.node import Node
+from dchat.roles.creator import Creator
+from dchat.roles.joiner import Joiner
+from dchat.roles.role import Role
+from dchat.actions.listen_clients import ListenClient
+from dchat.actions.send_joinee_msgs import SendJoineeMessage
+from dchat.actions.listen_joiner_msgs import ListenJoinerMsgs
+from dchat.actions.send_joiner_msgs import SendJoinerMsgs
+from dchat.actions.action import Action
 
 
 def main():
-    parser: argparse.ArgumentParser = argparse.ArgumentParser(description="Decentralized chat")
-    parser.add_argument("--create", action="store_true", default=False, help="Create a new chat")
-    parser.add_argument("--join", action="store_true", default=False, help="Join an existing chat")
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(
+        description="Decentralized chat"
+    )
+    parser.add_argument(
+        "--create", action="store_true", default=False, help="Create a new chat"
+    )
+    parser.add_argument(
+        "--join", action="store_true", default=False, help="Join an existing chat"
+    )
 
     args: argparse.Namespace = parser.parse_args()
 
@@ -50,7 +56,9 @@ def main():
         send_joiner_message_action: Action = SendJoinerMsgs()
 
         joiner_role: Role = Joiner()
-        joiner_role.register_values(server_ip=ip, nickname=nickname, clients=client_node.ledger)
+        joiner_role.register_values(
+            server_ip=ip, nickname=nickname, clients=client_node.ledger
+        )
         joiner_role.hook_action(action=listen_joiner_msgs_action)
         joiner_role.hook_action(action=send_joiner_message_action)
 

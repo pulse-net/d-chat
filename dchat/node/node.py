@@ -5,16 +5,17 @@ all of these actions have to be run in an infinite loop in their own thread.
 """
 from typing import List
 
-from ..roles.role import Role
-from ..ledger.ledger import Ledger
-from ..ledger.ledger_entry import LedgerEntry
-from ..utils import helper
+from dchat.roles.role import Role
+from dchat.ledger.ledger import Ledger
+from dchat.ledger.ledger_entry import LedgerEntry
+from dchat.utils import helper
 
 
 class Node:
     """
     Represents a Node in the P2P network.
     """
+
     def __init__(self, nickname) -> None:
         self.__nickname: str = nickname
         self.__ledger: Ledger = Ledger()

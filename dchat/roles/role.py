@@ -9,13 +9,14 @@ from typing import List, Dict
 from abc import abstractmethod
 import threading
 
-from ..actions.action import Action
+from dchat.actions.action import Action
 
 
 class Role:
     """
     Represents of a role that can be assigned to a node.
     """
+
     def __init__(self) -> None:
         self.__actions: List[Action] = []
         self._joiner_values: Dict = {}
