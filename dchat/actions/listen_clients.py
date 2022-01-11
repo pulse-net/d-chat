@@ -9,7 +9,9 @@ from .action import Action
 from ..message.message import Message
 from ..message.command import Command
 from ..message.dtype import DType
+from ..message.token import Token
 from ..utils import constants
+from ..utils import encode
 
 
 class ListenClient(Action):
@@ -18,21 +20,17 @@ class ListenClient(Action):
 
     @staticmethod
     def __send_ledger_entry(client: socket.socket, ledger_entry: LedgerEntry) -> None:
-        message = Message(Command.LEDGER_ENTRY, DType.LEDGER_IP, ledger_entry.ip_address)
-        client.send(message.serialize())
-        client.send("<END>".encode("utf-8"))
+        encode.send_msg_with_end_token(cmd=Command.LEDGER_ENTRY, dtype=DType.LEDGER_IP,
+                                               msg=ledger_entry.ip_address, client=client)
 
-        message = Message(Command.LEDGER_ENTRY, DType.LEDGER_NICKNAME, ledger_entry.nick_name)
-        client.send(message.serialize())
-        client.send("<END>".encode("utf-8"))
+        encode.send_msg_with_end_token(cmd=Command.LEDGER_ENTRY, dtype=DType.LEDGER_NICKNAME,
+                                               msg=ledger_entry.nick_name, client=client)
 
-        message = Message(Command.LEDGER_ENTRY, DType.LEDGER_TIMESTAMP, str(ledger_entry.timestamp))
-        client.send(message.serialize())
-        client.send("<END>".encode("utf-8"))
+        encode.send_msg_with_end_token(cmd=Command.LEDGER_ENTRY, dtype=DType.LEDGER_TIMESTAMP,
+                                               msg=str(ledger_entry.timestamp), client=client)
 
-        message = Message(Command.LEDGER_ENTRY, DType.LEDGER_DADDR, ledger_entry.daddr)
-        client.send(message.serialize())
-        client.send("<END>".encode("utf-8"))
+        encode.send_msg_with_end_token(cmd=Command.LEDGER_ENTRY, dtype=DType.LEDGER_DADDR,
+                                               msg=ledger_entry.daddr, client=client)
 
     def __send_ledger(self, client: socket.socket, ledger: Ledger):
         for entry in ledger.ledger:
@@ -82,9 +80,10 @@ class ListenClient(Action):
 
                         for client_socket in client_list:
                             if client_socket != client:
-                                m = Message(Command.MSG, DType.MSG, message.msg)
-                                client_socket.send(m.serialize())
-                                client_socket.send("<END>".encode("utf-8"))
+                                encode.send_msg_with_end_token(
+                                    cmd=Command.MSG, dtype=DType.MSG,
+                                    msg=message.msg, client=client_socket
+                                )
 
     def start(self) -> None:
         print("Server is listening...")
