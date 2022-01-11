@@ -1,20 +1,16 @@
-import re
 import pickle
 
-from .action import Action
-from ..ledger.ledger_entry import LedgerEntry
-from ..utils import constants
-from ..message.command import Command
-from ..message.dtype import DType
+from dchat.actions.action import Action
+from dchat.ledger.ledger_entry import LedgerEntry
+from dchat.utils import constants
+from dchat.message.command import Command
+from dchat.message.dtype import DType
 
 
 class ListenJoinerMsgs(Action):
-    def __init__(self):
-        super(ListenJoinerMsgs, self).__init__()
-
     def start(self) -> None:
-        client = self._thread_values.get('client')
-        clients = self._thread_values.get('clients')
+        client = self._thread_values.get("client")
+        clients = self._thread_values.get("clients")
 
         ip = ""
         nickname = ""
@@ -33,8 +29,8 @@ class ListenJoinerMsgs(Action):
                     continue
 
                 if not is_message_remaining:
-                    msg_len = int(message[:constants.MSG_HEADER_LENGTH])
-                    remaining_message = message[constants.MSG_HEADER_LENGTH:]
+                    msg_len = int(message[: constants.MSG_HEADER_LENGTH])
+                    remaining_message = message[constants.MSG_HEADER_LENGTH :]
 
                     if len(remaining_message) == msg_len:
                         message = pickle.loads(remaining_message)
@@ -64,8 +60,14 @@ class ListenJoinerMsgs(Action):
                             daddr = message.msg
 
                         if ip and nickname and timestamp and daddr:
-                            clients.add_entry(LedgerEntry(ip_address=ip, nick_name=nickname, 
-                                                        timestamp=timestamp, daddr=daddr))
+                            clients.add_entry(
+                                LedgerEntry(
+                                    ip_address=ip,
+                                    nick_name=nickname,
+                                    timestamp=timestamp,
+                                    daddr=daddr,
+                                )
+                            )
                             print("Ledger updated: ")
                             print(clients)
 

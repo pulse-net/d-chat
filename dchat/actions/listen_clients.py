@@ -1,36 +1,48 @@
 import socket
 import threading
-from typing import List, Dict
+from typing import List
 import pickle
 
-from ..ledger.ledger import Ledger
-from ..ledger.ledger_entry import LedgerEntry
-from .action import Action
-from ..message.message import Message
-from ..message.command import Command
-from ..message.dtype import DType
-from ..message.token import Token
-from ..utils import constants
-from ..utils import encode
+from dchat.ledger.ledger import Ledger
+from dchat.ledger.ledger_entry import LedgerEntry
+from dchat.actions.action import Action
+from dchat.message.message import Message
+from dchat.message.command import Command
+from dchat.message.dtype import DType
+from dchat.utils import constants
+from dchat.utils import encode
 
 
 class ListenClient(Action):
-    def __init__(self) -> None:
-        super(ListenClient, self).__init__()
-
     @staticmethod
     def __send_ledger_entry(client: socket.socket, ledger_entry: LedgerEntry) -> None:
-        encode.send_msg_with_end_token(cmd=Command.LEDGER_ENTRY, dtype=DType.LEDGER_IP,
-                                               msg=ledger_entry.ip_address, client=client)
+        encode.send_msg_with_end_token(
+            cmd=Command.LEDGER_ENTRY,
+            dtype=DType.LEDGER_IP,
+            msg=ledger_entry.ip_address,
+            client=client,
+        )
 
-        encode.send_msg_with_end_token(cmd=Command.LEDGER_ENTRY, dtype=DType.LEDGER_NICKNAME,
-                                               msg=ledger_entry.nick_name, client=client)
+        encode.send_msg_with_end_token(
+            cmd=Command.LEDGER_ENTRY,
+            dtype=DType.LEDGER_NICKNAME,
+            msg=ledger_entry.nick_name,
+            client=client,
+        )
 
-        encode.send_msg_with_end_token(cmd=Command.LEDGER_ENTRY, dtype=DType.LEDGER_TIMESTAMP,
-                                               msg=str(ledger_entry.timestamp), client=client)
+        encode.send_msg_with_end_token(
+            cmd=Command.LEDGER_ENTRY,
+            dtype=DType.LEDGER_TIMESTAMP,
+            msg=str(ledger_entry.timestamp),
+            client=client,
+        )
 
-        encode.send_msg_with_end_token(cmd=Command.LEDGER_ENTRY, dtype=DType.LEDGER_DADDR,
-                                               msg=ledger_entry.daddr, client=client)
+        encode.send_msg_with_end_token(
+            cmd=Command.LEDGER_ENTRY,
+            dtype=DType.LEDGER_DADDR,
+            msg=ledger_entry.daddr,
+            client=client,
+        )
 
     def __send_ledger(self, client: socket.socket, ledger: Ledger):
         for entry in ledger.ledger:
@@ -43,7 +55,9 @@ class ListenClient(Action):
         self.__send_ledger_entry(client=client, ledger_entry=ledger_entry)
 
     @staticmethod
-    def __listen_for_client_messages(client: socket.socket, client_list: List[socket.socket]) -> None:
+    def __listen_for_client_messages(
+        client: socket.socket, client_list: List[socket.socket]
+    ) -> None:
         is_message_remaining = False
         current_message = b""
         msg_len = 0
@@ -57,8 +71,8 @@ class ListenClient(Action):
                     continue
 
                 if not is_message_remaining:
-                    msg_len = int(message[:constants.MSG_HEADER_LENGTH])
-                    remaining_message = message[constants.MSG_HEADER_LENGTH:]
+                    msg_len = int(message[: constants.MSG_HEADER_LENGTH])
+                    remaining_message = message[constants.MSG_HEADER_LENGTH :]
 
                     if len(remaining_message) == msg_len:
                         message = pickle.loads(remaining_message)
@@ -81,20 +95,22 @@ class ListenClient(Action):
                         for client_socket in client_list:
                             if client_socket != client:
                                 encode.send_msg_with_end_token(
-                                    cmd=Command.MSG, dtype=DType.MSG,
-                                    msg=message.msg, client=client_socket
+                                    cmd=Command.MSG,
+                                    dtype=DType.MSG,
+                                    msg=message.msg,
+                                    client=client_socket,
                                 )
 
     def start(self) -> None:
         print("Server is listening...")
 
-        server = self._thread_values.get('server')
-        clients = self._thread_values.get('clients')
-        client_list = self._thread_values.get('client_list')
+        server = self._thread_values.get("server")
+        clients = self._thread_values.get("clients")
+        client_list = self._thread_values.get("client_list")
 
         while True:
             client, address = server.accept()
-            print(f'Connected with {str(address)}')
+            print(f"Connected with {str(address)}")
 
             nickname = client.recv(1024).decode()
 
@@ -112,6 +128,7 @@ class ListenClient(Action):
 
             client_list.append(client)
 
-            listen_message_thread = threading.Thread(target=self.__listen_for_client_messages,
-                                                     args=(client, client_list))
+            listen_message_thread = threading.Thread(
+                target=self.__listen_for_client_messages, args=(client, client_list)
+            )
             listen_message_thread.start()

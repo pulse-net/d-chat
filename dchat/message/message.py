@@ -1,8 +1,8 @@
 import pickle
 
-from .command import Command
-from .dtype import DType
-from ..utils import constants
+from dchat.message.command import Command
+from dchat.message.dtype import DType
+from dchat.utils import constants
 
 
 class Message:

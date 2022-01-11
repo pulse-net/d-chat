@@ -37,11 +37,7 @@ setup(
     author_email="sdharchou@gmail.com",
     license="MIT",
     packages=find_packages(),
-    entry_points={
-        "console_scripts": [
-            "dchat = dchat.chat:main",
-        ]
-    },
+    entry_points={"console_scripts": ["dchat = dchat.chat:main",]},
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",

@@ -1,6 +1,6 @@
 from typing import List
 
-from .ledger_entry import LedgerEntry
+from dchat.ledger.ledger_entry import LedgerEntry
 
 
 class Ledger:
