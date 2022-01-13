@@ -1,43 +1,78 @@
+"""
+A joiner is a role for the node which joins an
+existing network via a creator. The joiner
+sends messages to creator who broadcasts
+it to all other joiners.
+"""
 import socket
-from typing import Optional
+from typing import Optional, List
 import pickle
 
 from dchat.roles.role import Role
+from dchat.ledger.ledger import Ledger
 from dchat.ledger.ledger_entry import LedgerEntry
 from dchat.utils import constants
 from dchat.message.dtype import DType
 from dchat.message.command import Command
+from dchat.message.message import Message
 
 
 class Joiner(Role):
+    """
+    Represents a joiner node of a chat.
+    """
+
     def __init__(self) -> None:
         super().__init__()
 
         self.__client: Optional[socket.socket] = None
 
+    @property
+    def server(self) -> Optional[socket.socket]:
+        """
+        Returns the server instance.
+        :return: The server instance.
+        """
+        return None
+
+    @property
+    def client_list(self) -> Optional[List[socket.socket]]:
+        """
+        Returns the client list.
+        :return: The client list.
+        """
+        return None
+
     def start(self) -> None:
-        server_ip = self._joiner_values.get("server_ip")
-        nickname = self._joiner_values.get("nickname")
-        clients = self._joiner_values.get("clients")
+        """
+        Starts the joiner.
+        """
+        server_ip: Optional[str] = self._joiner_values.get("server_ip")
+        nickname: Optional[str] = self._joiner_values.get("nickname")
+        clients: Optional[Ledger] = self._joiner_values.get("clients")
+
+        assert server_ip is not None
+        assert nickname is not None
+        assert clients is not None
 
         self.__client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__client.connect((server_ip, constants.PORT))
 
         self.__client.send(nickname.encode())
 
-        ips = []
-        nicknames = []
-        timestamps = []
-        daddrs = []
+        ips: List[str] = []
+        nicknames: List[str] = []
+        timestamps: List[str] = []
+        daddrs: List[str] = []
 
-        current_message = b""
-        msg_len = 0
-        message = None
-        is_message_remaining = False
-        break_loop = False
+        current_message: bytes = b""
+        msg_len: int = 0
+        message: Optional[Message] = None
+        is_message_remaining: bool = False
+        break_loop: bool = False
         while not break_loop:
-            ledger_info = self.__client.recv(1024)
-            ledger_info_split = ledger_info.split(b"<END>")
+            ledger_info: bytes = self.__client.recv(1024)
+            ledger_info_split: List[bytes] = ledger_info.split(b"<END>")
 
             for ledger_info_val in ledger_info_split:
                 if len(ledger_info_val) == 0:
@@ -75,13 +110,22 @@ class Joiner(Role):
                     elif message.dtype == DType.LEDGER_DADDR:
                         daddrs.append(message.msg)
 
-        for ip, nick_name, timestamp, daddr in zip(ips, nicknames, timestamps, daddrs):
+        for ip_addr, nick_name, timestamp, daddr in zip(
+            ips, nicknames, timestamps, daddrs
+        ):
             clients.add_entry(
                 LedgerEntry(
-                    ip_address=ip, nick_name=nick_name, timestamp=timestamp, daddr=daddr
+                    ip_address=ip_addr,
+                    nick_name=nick_name,
+                    timestamp=timestamp,
+                    daddr=daddr,
                 )
             )
 
     @property
-    def client(self) -> socket.socket:
+    def client(self) -> Optional[socket.socket]:
+        """
+        Returns the client instance.
+        :return: The client instance.
+        """
         return self.__client

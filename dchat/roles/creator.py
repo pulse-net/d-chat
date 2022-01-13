@@ -22,31 +22,37 @@ class Creator(Role):
         super().__init__()
 
         self.__server: Optional[socket.socket] = None
-        self.__client_list = []
+        self.__client_list: Optional[List[socket.socket]] = []
         self.__clients: Ledger = Ledger()
+
+    @property
+    def client(self) -> Optional[socket.socket]:
+        """
+        Returns the client socket, not required in creator.
+        :return: client socket
+        """
+        return None
 
     def start(self) -> None:
         """
         Starts the creator role.
         """
-        self.__server: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__server.bind((constants.HOST, constants.PORT))
         self.__server.listen()
 
     @property
-    def server(self) -> socket.socket:
+    def server(self) -> Optional[socket.socket]:
         """
         Returns the server socket.
-
         :return: socket instance of server
         """
         return self.__server
 
     @property
-    def client_list(self) -> List[socket.socket]:
+    def client_list(self) -> Optional[List[socket.socket]]:
         """
         Returns the list of client sockets.
-
         :return: list of client sockets
         """
         return self.__client_list
