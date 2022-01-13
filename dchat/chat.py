@@ -1,3 +1,6 @@
+"""
+Driver for the chat server.
+"""
 import argparse
 
 from dchat.node.node import Node
@@ -12,6 +15,9 @@ from dchat.actions.action import Action
 
 
 def main():
+    """
+    Main method which is invoked using dchat command.
+    """
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         description="Decentralized chat"
     )
@@ -48,7 +54,7 @@ def main():
 
         server_node.start_threads()
     elif args.join:
-        ip = input("Enter the IP address of the chat node: ")
+        ip_addr = input("Enter the IP address of the chat node: ")
         nickname = input("Enter your nickname: ")
         client_node: Node = Node(nickname=nickname)
 
@@ -57,7 +63,7 @@ def main():
 
         joiner_role: Role = Joiner()
         joiner_role.register_values(
-            server_ip=ip, nickname=nickname, clients=client_node.ledger
+            server_ip=ip_addr, nickname=nickname, clients=client_node.ledger
         )
         joiner_role.hook_action(action=listen_joiner_msgs_action)
         joiner_role.hook_action(action=send_joiner_message_action)
