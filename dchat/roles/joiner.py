@@ -75,6 +75,8 @@ class Joiner(Role):
                     elif message.dtype == DType.LEDGER_DADDR:
                         daddrs.append(message.msg)
 
+                    message = None
+
         for ip, nick_name, timestamp, daddr in zip(ips, nicknames, timestamps, daddrs):
             clients.add_entry(
                 LedgerEntry(
