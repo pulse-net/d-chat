@@ -110,6 +110,8 @@ class Joiner(Role):
                     elif message.dtype == DType.LEDGER_DADDR:
                         daddrs.append(message.msg)
 
+                    message = None
+
         for ip_addr, nick_name, timestamp, daddr in zip(
             ips, nicknames, timestamps, daddrs
         ):
