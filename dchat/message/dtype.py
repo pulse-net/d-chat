@@ -10,9 +10,9 @@ class DType(Enum):
     Enum for the different types of messages.
     """
 
-    LEDGER_IP: int = 0
-    LEDGER_NICKNAME: int = 1
-    LEDGER_TIMESTAMP: int = 2
-    LEDGER_DADDR: int = 3
-    MSG: int = 4
-    NONE: int = 5
+    LEDGER_IP = 0
+    LEDGER_NICKNAME = 1
+    LEDGER_TIMESTAMP = 2
+    LEDGER_DADDR = 3
+    MSG = 4
+    NONE = 5

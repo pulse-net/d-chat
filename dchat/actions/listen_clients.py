@@ -64,7 +64,7 @@ class ListenClient(Action):
 
     @staticmethod
     def __listen_for_client_messages(
-        client: socket.socket, client_list: List[socket.socket]
+            client: socket.socket, client_list: List[socket.socket]
     ) -> None:
         is_message_remaining: bool = False
         current_message: bytes = b""
@@ -85,7 +85,7 @@ class ListenClient(Action):
 
                 if not is_message_remaining:
                     msg_len = int(message[: constants.MSG_HEADER_LENGTH])
-                    remaining_message: bytes = message[constants.MSG_HEADER_LENGTH :]
+                    remaining_message: bytes = message[constants.MSG_HEADER_LENGTH:]
 
                     if len(remaining_message) == msg_len:
                         message_obj = pickle.loads(remaining_message)

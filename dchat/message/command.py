@@ -10,6 +10,6 @@ class Command(Enum):
     Enum of all possible commands.
     """
 
-    LEDGER_ENTRY: int = 0
-    MSG: int = 1
-    STOP_SEND: int = 2
+    LEDGER_ENTRY = 0
+    MSG = 1
+    STOP_SEND = 2

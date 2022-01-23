@@ -10,7 +10,7 @@ class Token(Enum):
     Enum of all possible tokens.
     """
 
-    END: int = 0
+    END = 0
 
     def __str__(self) -> str:
         """

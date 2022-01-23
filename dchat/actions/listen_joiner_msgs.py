@@ -60,7 +60,7 @@ class ListenJoinerMsgs(Action):
 
                 if not is_message_remaining:
                     msg_len = int(message[: constants.MSG_HEADER_LENGTH])
-                    remaining_message: bytes = message[constants.MSG_HEADER_LENGTH :]
+                    remaining_message: bytes = message[constants.MSG_HEADER_LENGTH:]
 
                     if len(remaining_message) == msg_len:
                         message_obj = pickle.loads(remaining_message)

@@ -80,7 +80,7 @@ class Joiner(Role):
 
                 if not is_message_remaining:
                     msg_len = int(ledger_info_val[: constants.MSG_HEADER_LENGTH])
-                    remaining_message = ledger_info_val[constants.MSG_HEADER_LENGTH :]
+                    remaining_message = ledger_info_val[constants.MSG_HEADER_LENGTH:]
 
                     if len(remaining_message) == msg_len:
                         message = pickle.loads(remaining_message)
@@ -113,7 +113,7 @@ class Joiner(Role):
                     message = None
 
         for ip_addr, nick_name, timestamp, daddr in zip(
-            ips, nicknames, timestamps, daddrs
+                ips, nicknames, timestamps, daddrs
         ):
             clients.add_entry(
                 LedgerEntry(
