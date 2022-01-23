@@ -24,7 +24,12 @@ class Node:
         self.__self_ledger_update()
 
     def __self_ledger_update(self) -> None:
-        self_client = LedgerEntry(ip_address=helper.get_ip(), nick_name=self.__nickname)
+        """
+        Adds itself to the ledger of the node.
+        """
+        self_client: LedgerEntry = LedgerEntry(
+            ip_address=helper.get_ip(), nick_name=self.__nickname
+        )
         self.__ledger.add_entry(self_client)
 
     def start(self) -> None:
@@ -37,31 +42,40 @@ class Node:
             role.start()
 
     def register_action_values(self, **kwargs) -> None:
+        """
+        Registers values dynamically to the actions via the roles.
+        :param kwargs: Values to be registered.
+        """
         for role in self.__roles:
             for action in role.actions:
                 action.register_values(**kwargs)
 
     def start_threads(self) -> None:
+        """
+        Starts all the role threads.
+        """
         for role in self.__roles:
             role.start_threads()
 
     def hook_role(self, role: Role) -> None:
         """
-        Hooks a new role to an existing node.
-
-        role: Role to be hooked.
+        Hooks a rule to the node.
+        :param role: Role to be hooked.
         """
         self.__roles.append(role)
 
     @property
     def nickname(self) -> str:
+        """
+        Returns the nickname of the node.
+        :return: Nickname of the node.
+        """
         return self.__nickname
 
     @property
     def ledger(self) -> Ledger:
         """
         Returns the ledger of the node.
-
         :return: Ledger of the node.
         """
         return self.__ledger

@@ -5,7 +5,7 @@ all of these actions have to be run in an infinite loop in their
 own thread.
 """
 import socket
-from typing import List, Dict
+from typing import List, Dict, Optional
 from abc import abstractmethod
 import threading
 
@@ -23,13 +23,15 @@ class Role:
 
     @abstractmethod
     def start(self) -> None:
-        pass
+        """
+        Starts the role.
+        """
 
     def start_threads(self) -> None:
         """
         Starts all the actions of the role.
         """
-        threads = []
+        threads: List[threading.Thread] = []
         for action in self.__actions:
             thread = threading.Thread(target=action.start)
             threads.append(thread)
@@ -42,34 +44,54 @@ class Role:
 
     def hook_action(self, action: Action) -> None:
         """
-        Hooks a new action to an existing role.
-
-        action: Action to be hooked.
+        Hooks an action to the role.
+        :param action: The action to hook.
         """
         self.__actions.append(action)
 
     def register_values(self, **kwargs):
+        """
+        Registers values to be used by the role.
+        :param kwargs: The values to register.
+        """
         self._joiner_values = kwargs
 
     @property
     @abstractmethod
-    def server(self) -> str:
-        pass
+    def server(self) -> Optional[socket.socket]:
+        """
+        The server instance
+        :return: The server instance
+        """
 
     @property
     @abstractmethod
-    def client_list(self) -> List[socket.socket]:
-        pass
+    def client_list(self) -> Optional[List[socket.socket]]:
+        """
+        The list of clients
+        :return: The list of clients
+        """
 
     @property
     @abstractmethod
-    def client(self) -> socket.socket:
-        pass
+    def client(self) -> Optional[socket.socket]:
+        """
+        The client instance
+        :return: The client instance
+        """
 
     @property
     def actions(self) -> List[Action]:
+        """
+        The actions of the role.
+        :return: The actions of the role.
+        """
         return self.__actions
 
     @property
     def role_type(self) -> str:
+        """
+        The type of the role.
+        :return: The type of the role.
+        """
         return self.__class__.__name__
